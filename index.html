@@ -3,600 +3,801 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>BMI Calculator Pro</title>
+<title>BMI AI Pro</title>
 <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@200;300;400;600;700;900&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-
 :root{
-  --bg:#0d1117;
-  --card:#161b22;
-  --card2:#1c2333;
-  --border:#30363d;
-  --text:#e6edf3;
-  --text2:#8b949e;
-  --accent:#58a6ff;
-  --green:#3fb950;
-  --yellow:#d29922;
-  --orange:#f0883e;
-  --red:#f85149;
-  --blue:#79c0ff;
+  --bg:#07090f;
+  --card:#0e1117;
+  --card2:#141821;
+  --card3:#1a2030;
+  --border:#1e2535;
+  --border2:#252d3d;
+  --text:#e2e8f4;
+  --text2:#7a8499;
+  --text3:#4a5568;
+  --accent:#4f8ef7;
+  --accent2:#6ee7b7;
+  --green:#34d399;
+  --yellow:#fbbf24;
+  --orange:#f97316;
+  --red:#f87171;
+  --blue:#60a5fa;
+  --purple:#a78bfa;
 }
-
 html{scroll-behavior:smooth}
 body{
   font-family:'Prompt',sans-serif;
   background:var(--bg);
   color:var(--text);
   min-height:100vh;
-  padding:24px 16px 60px;
-  background-image:
-    radial-gradient(ellipse 60% 40% at 10% 10%,rgba(88,166,255,0.06) 0%,transparent 60%),
-    radial-gradient(ellipse 50% 60% at 90% 90%,rgba(63,185,80,0.05) 0%,transparent 60%);
+  padding:0;
+  overflow-x:hidden;
+}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 70% 50% at 5% 5%,rgba(79,142,247,.07),transparent 60%),
+    radial-gradient(ellipse 50% 60% at 95% 95%,rgba(110,231,183,.05),transparent 60%);
 }
 
-.container{max-width:960px;margin:0 auto}
-
-/* HEADER */
-.site-header{text-align:center;padding:32px 0 40px;animation:fadeDown .6s ease both}
-.site-header .badge{
-  display:inline-block;
-  border:1px solid rgba(88,166,255,.3);
-  color:var(--accent);
-  font-size:11px;font-weight:600;
-  letter-spacing:.15em;text-transform:uppercase;
-  padding:4px 16px;border-radius:20px;
-  background:rgba(88,166,255,.07);
-  margin-bottom:16px;
+/* ── TABS ── */
+.topbar{
+  position:sticky;top:0;z-index:100;
+  background:rgba(7,9,15,.85);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+  padding:0 20px;
 }
-.site-header h1{font-size:clamp(2.4rem,6vw,4rem);font-weight:900;line-height:1;letter-spacing:-.03em}
-.site-header h1 span{
-  background:linear-gradient(135deg,#58a6ff,#3fb950);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+.topbar-inner{
+  max-width:1100px;margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;
+  height:56px;
 }
-.site-header p{color:var(--text2);margin-top:10px;font-size:.95rem;font-weight:300}
-
-/* LAYOUT */
-.layout{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
-@media(max-width:700px){.layout{grid-template-columns:1fr}}
-
-/* CARD */
-.card{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:20px;
-  padding:28px;
-  animation:fadeUp .6s .1s ease both;
+.logo{font-size:1.1rem;font-weight:900;letter-spacing:-.02em;color:var(--text)}
+.logo span{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.tabs{display:flex;gap:4px}
+.tab{
+  padding:7px 16px;border-radius:8px;
+  border:none;background:transparent;
+  color:var(--text2);font-family:'Prompt',sans-serif;
+  font-size:.82rem;font-weight:400;cursor:pointer;
+  transition:all .2s;display:flex;align-items:center;gap:6px;
 }
+.tab:hover{color:var(--text);background:var(--card2)}
+.tab.active{background:var(--accent);color:#fff;font-weight:600}
+.tab .dot{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.7}
 
-/* GENDER */
-.gender-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px}
-.gender-btn{
-  background:transparent;
-  border:1px solid var(--border);
-  border-radius:14px;
-  padding:14px 8px;
-  color:var(--text2);
-  font-family:'Prompt',sans-serif;
-  font-size:.85rem;
-  font-weight:400;
-  cursor:pointer;
-  transition:all .2s;
-  display:flex;flex-direction:column;align-items:center;gap:6px;
+/* ── PAGES ── */
+.page{display:none;max-width:1100px;margin:0 auto;padding:28px 20px 60px}
+.page.active{display:block;animation:fadeIn .35s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── CARDS ── */
+.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:24px}
+.card-title{font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text2);margin-bottom:18px}
+
+/* ── PAGE 1: CALCULATOR ── */
+.calc-grid{display:grid;grid-template-columns:360px 1fr;gap:20px;align-items:start}
+@media(max-width:780px){.calc-grid{grid-template-columns:1fr}}
+
+/* gender */
+.gender-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:22px}
+.gbtn{
+  background:transparent;border:1px solid var(--border2);border-radius:12px;
+  padding:14px 8px;color:var(--text2);font-family:'Prompt',sans-serif;
+  font-size:.83rem;cursor:pointer;transition:all .2s;
+  display:flex;flex-direction:column;align-items:center;gap:7px;
 }
-.gender-btn svg{width:28px;height:28px;opacity:.6;transition:opacity .2s}
-.gender-btn:hover{border-color:var(--text2)}
-.gender-btn.active{border-color:var(--accent);background:rgba(88,166,255,.08);color:var(--accent)}
-.gender-btn.active svg{opacity:1}
+.gbtn svg{width:26px;height:26px;transition:all .2s}
+.gbtn:hover{border-color:var(--accent);color:var(--text)}
+.gbtn.active{border-color:var(--accent);background:rgba(79,142,247,.1);color:var(--accent)}
 
-/* SLIDER GROUP */
-.sl-group{margin-bottom:20px}
+/* sliders */
+.sl{margin-bottom:20px}
 .sl-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
-.sl-head label{font-size:.75rem;font-weight:600;color:var(--text2);letter-spacing:.08em;text-transform:uppercase}
-.sl-val{font-size:1.5rem;font-weight:700;color:var(--text)}
-.sl-val small{font-size:.7rem;font-weight:300;color:var(--text2);margin-left:2px}
-
-input[type=range]{
-  -webkit-appearance:none;appearance:none;
-  width:100%;height:5px;border-radius:99px;
-  background:var(--border);outline:none;cursor:pointer;
-}
-input[type=range]::-webkit-slider-thumb{
-  -webkit-appearance:none;
-  width:20px;height:20px;border-radius:50%;
-  background:var(--accent);
-  border:2px solid var(--bg);
-  box-shadow:0 0 0 3px rgba(88,166,255,.2);
-  transition:transform .15s,box-shadow .15s;
-}
-input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.25);box-shadow:0 0 0 6px rgba(88,166,255,.2)}
+.sl-label{font-size:.72rem;font-weight:600;color:var(--text2);letter-spacing:.08em;text-transform:uppercase}
+.sl-val{font-size:1.45rem;font-weight:700}
+.sl-val small{font-size:.68rem;font-weight:300;color:var(--text2);margin-left:2px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:99px;background:var(--border2);outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--accent);border:2px solid var(--bg);box-shadow:0 0 0 3px rgba(79,142,247,.25);transition:transform .15s}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.3)}
 
 .btn-calc{
-  width:100%;padding:15px;
+  width:100%;padding:14px;
   background:linear-gradient(135deg,var(--accent),#388bfd);
-  color:#fff;border:none;border-radius:14px;
-  font-family:'Prompt',sans-serif;font-size:1rem;font-weight:700;
-  cursor:pointer;transition:all .2s;letter-spacing:.02em;
-  box-shadow:0 4px 20px rgba(88,166,255,.25);
-  margin-top:8px;
+  color:#fff;border:none;border-radius:12px;
+  font-family:'Prompt',sans-serif;font-size:.95rem;font-weight:700;
+  cursor:pointer;transition:all .2s;margin-top:6px;
+  box-shadow:0 4px 18px rgba(79,142,247,.3);
 }
-.btn-calc:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(88,166,255,.4)}
-.btn-calc:active{transform:translateY(0)}
+.btn-calc:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(79,142,247,.45)}
 
-/* ===== RIGHT PANEL ===== */
-.right-panel{display:flex;flex-direction:column;gap:20px;animation:fadeUp .6s .2s ease both}
+/* silhouette */
+.sil-card{text-align:center}
+.sil-stage{width:130px;height:210px;margin:0 auto 14px;position:relative;display:flex;align-items:flex-end;justify-content:center}
+.sil-glow{position:absolute;bottom:4px;left:50%;transform:translateX(-50%);width:90px;height:16px;border-radius:50%;filter:blur(10px);opacity:.5;transition:background .5s}
+.bmi-big{font-size:3rem;font-weight:900;letter-spacing:-.04em;line-height:1}
+.bmi-cat-lbl{font-size:.82rem;font-weight:600;margin-top:5px}
+.bmi-sub{font-size:.72rem;color:var(--text2);margin-top:2px}
 
-/* SILHOUETTE CARD */
-.silhouette-card{
-  background:var(--card);border:1px solid var(--border);
-  border-radius:20px;padding:28px 20px;
-  text-align:center;
-  position:relative;overflow:hidden;
+/* gauge */
+.gauge-wrap{margin-top:18px}
+.gauge-track{height:8px;border-radius:99px;background:linear-gradient(90deg,#60a5fa 0%,#34d399 26%,#fbbf24 54%,#f97316 76%,#f87171 100%);position:relative;margin-bottom:8px}
+.gauge-needle{position:absolute;top:50%;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:#fff;border:2.5px solid var(--bg);box-shadow:0 0 0 2.5px currentColor;transition:left .7s cubic-bezier(.34,1.56,.64,1)}
+.gauge-ticks{display:flex;justify-content:space-between;font-size:.6rem;color:var(--text3)}
+
+/* stats */
+.stats-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.stat-mini{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:12px 14px}
+.stat-mini .sm-l{font-size:.62rem;color:var(--text2);text-transform:uppercase;letter-spacing:.06em}
+.stat-mini .sm-v{font-size:1.2rem;font-weight:700;margin-top:3px}
+.stat-mini .sm-s{font-size:.65rem;color:var(--text2);margin-top:1px}
+
+/* risk bars */
+.risk-bars{margin-top:18px}
+.rb-item{margin-bottom:11px}
+.rb-head{display:flex;justify-content:space-between;font-size:.75rem;margin-bottom:5px}
+.rb-track{height:5px;background:var(--border2);border-radius:99px;overflow:hidden}
+.rb-fill{height:100%;border-radius:99px;transition:width .9s ease;width:0%}
+
+/* advice */
+.advice-box{border-radius:12px;padding:14px 16px;margin-top:16px;border-left:3px solid;font-size:.81rem;line-height:1.7;font-weight:300}
+.advice-box strong{font-weight:700;display:block;margin-bottom:3px;font-size:.85rem}
+
+/* tips */
+.tips-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.tip{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:12px;font-size:.75rem;color:var(--text2);line-height:1.5}
+.tip .ti{font-size:1.1rem;margin-bottom:4px}
+.tip .tt{font-size:.77rem;font-weight:600;color:var(--text);margin-bottom:2px}
+
+/* ── PAGE 2: HISTORY ── */
+.hist-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.hist-header h2{font-size:1.3rem;font-weight:700}
+.btn-clear{background:transparent;border:1px solid var(--border2);color:var(--text2);padding:7px 14px;border-radius:8px;font-family:'Prompt',sans-serif;font-size:.78rem;cursor:pointer;transition:all .2s}
+.btn-clear:hover{border-color:var(--red);color:var(--red)}
+
+/* chart canvas */
+.chart-wrap{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:24px;margin-bottom:20px}
+#hist-canvas{width:100%;height:220px}
+
+.hist-list{display:flex;flex-direction:column;gap:10px}
+.hist-item{
+  background:var(--card);border:1px solid var(--border);border-radius:14px;
+  padding:16px 20px;display:flex;align-items:center;gap:16px;
+  animation:fadeIn .3s ease;
 }
-.silhouette-card::before{
-  content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse 70% 50% at 50% 80%,rgba(88,166,255,.04),transparent);
-  pointer-events:none;
+.hi-date{font-size:.72rem;color:var(--text2);min-width:80px}
+.hi-bmi{font-size:1.5rem;font-weight:900;min-width:60px}
+.hi-info{flex:1}
+.hi-cat{font-size:.82rem;font-weight:600}
+.hi-det{font-size:.72rem;color:var(--text2);margin-top:2px}
+.hi-badge{padding:4px 10px;border-radius:20px;font-size:.7rem;font-weight:600;border:1px solid}
+.empty-state{text-align:center;padding:60px 20px;color:var(--text2)}
+.empty-state .es-icon{font-size:3rem;margin-bottom:12px}
+.empty-state p{font-size:.88rem}
+
+/* compare card */
+.compare-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:0}
+@media(max-width:600px){.compare-grid{grid-template-columns:1fr}}
+.cmp-card{background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:18px;text-align:center}
+.cmp-label{font-size:.68rem;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.cmp-val{font-size:2rem;font-weight:900;line-height:1}
+.cmp-sub{font-size:.7rem;color:var(--text2);margin-top:4px}
+.cmp-bar-wrap{margin-top:10px;height:4px;background:var(--border2);border-radius:99px;overflow:hidden}
+.cmp-bar{height:100%;border-radius:99px;transition:width 1s ease}
+
+/* ── PAGE 3: AI CHAT ── */
+.chat-layout{display:grid;grid-template-columns:240px 1fr;gap:20px;height:calc(100vh - 160px);min-height:500px}
+@media(max-width:700px){.chat-layout{grid-template-columns:1fr;height:auto}}
+
+.chat-sidebar{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:10px}
+.sidebar-title{font-size:.68rem;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px}
+.quick-btn{
+  background:var(--card2);border:1px solid var(--border);border-radius:10px;
+  padding:10px 12px;text-align:left;color:var(--text2);
+  font-family:'Prompt',sans-serif;font-size:.77rem;cursor:pointer;
+  transition:all .2s;line-height:1.45;
 }
-.body-stage{
-  position:relative;
-  width:160px;margin:0 auto 16px;
-  height:240px;
-  display:flex;align-items:flex-end;justify-content:center;
+.quick-btn:hover{border-color:var(--accent);color:var(--text);background:rgba(79,142,247,.06)}
+
+.chat-main{background:var(--card);border:1px solid var(--border);border-radius:18px;display:flex;flex-direction:column;overflow:hidden}
+.chat-header{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.ai-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.ai-info .ai-name{font-size:.88rem;font-weight:600}
+.ai-info .ai-status{font-size:.7rem;color:var(--green);display:flex;align-items:center;gap:4px}
+.ai-info .ai-status::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+
+.chat-messages{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:14px;min-height:200px;max-height:420px}
+.chat-messages::-webkit-scrollbar{width:4px}
+.chat-messages::-webkit-scrollbar-track{background:transparent}
+.chat-messages::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px}
+
+.msg{display:flex;gap:10px;animation:fadeIn .3s ease}
+.msg.user{flex-direction:row-reverse}
+.msg-avatar{width:30px;height:30px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.8rem;margin-top:2px}
+.msg.ai .msg-avatar{background:linear-gradient(135deg,var(--accent),var(--accent2))}
+.msg.user .msg-avatar{background:var(--card3);border:1px solid var(--border2)}
+.msg-bubble{max-width:75%;padding:12px 16px;border-radius:16px;font-size:.83rem;line-height:1.65;font-weight:300}
+.msg.ai .msg-bubble{background:var(--card2);border:1px solid var(--border2);border-radius:4px 16px 16px 16px}
+.msg.user .msg-bubble{background:linear-gradient(135deg,var(--accent),#388bfd);color:#fff;border-radius:16px 4px 16px 16px;font-weight:400}
+.msg-time{font-size:.62rem;color:var(--text3);margin-top:4px;text-align:right}
+
+.typing{display:flex;gap:4px;padding:12px 16px;background:var(--card2);border:1px solid var(--border2);border-radius:4px 16px 16px 16px;width:fit-content}
+.typing span{width:6px;height:6px;border-radius:50%;background:var(--text2);animation:bounce .9s ease infinite}
+.typing span:nth-child(2){animation-delay:.15s}
+.typing span:nth-child(3){animation-delay:.3s}
+
+.chat-input-row{padding:16px 20px;border-top:1px solid var(--border);display:flex;gap:10px;align-items:flex-end}
+.chat-input{
+  flex:1;background:var(--card2);border:1px solid var(--border2);
+  border-radius:12px;padding:11px 16px;color:var(--text);
+  font-family:'Prompt',sans-serif;font-size:.85rem;
+  outline:none;resize:none;max-height:100px;min-height:42px;
+  transition:border-color .2s;line-height:1.5;
 }
-
-/* SVG body figure */
-.body-svg{transition:all .6s cubic-bezier(.34,1.56,.64,1)}
-
-/* glow ring */
-.glow-ring{
-  position:absolute;
-  bottom:10px;left:50%;transform:translateX(-50%);
-  width:100px;height:20px;
-  border-radius:50%;
-  filter:blur(12px);
-  opacity:.5;
-  transition:background .6s;
+.chat-input:focus{border-color:var(--accent)}
+.chat-input::placeholder{color:var(--text3)}
+.btn-send{
+  background:var(--accent);border:none;border-radius:10px;
+  width:42px;height:42px;flex-shrink:0;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .2s;color:#fff;
 }
-
-.sil-bmi-num{font-size:2.8rem;font-weight:900;letter-spacing:-.04em;line-height:1}
-.sil-bmi-cat{font-size:.85rem;font-weight:600;margin-top:4px;letter-spacing:.05em}
-.sil-bmi-range{font-size:.75rem;color:var(--text2);font-weight:300;margin-top:2px}
-
-/* BMI GAUGE */
-.gauge-wrap{margin-top:20px}
-.gauge-track{
-  height:10px;border-radius:99px;
-  background:linear-gradient(90deg,#79c0ff 0%,#3fb950 28%,#d29922 56%,#f0883e 76%,#f85149 100%);
-  position:relative;margin-bottom:8px;
-}
-.gauge-needle{
-  position:absolute;top:50%;
-  transform:translate(-50%,-50%);
-  width:16px;height:16px;border-radius:50%;
-  background:#fff;border:3px solid var(--bg);
-  box-shadow:0 0 0 3px currentColor;
-  transition:left .8s cubic-bezier(.34,1.56,.64,1);
-}
-.gauge-labels{display:flex;justify-content:space-between;font-size:.62rem;color:var(--text2)}
-
-/* RESULT DETAIL CARD */
-.result-card{
-  background:var(--card);border:1px solid var(--border);
-  border-radius:20px;padding:28px;
-  display:none;
-}
-.result-card.show{display:block;animation:popIn .5s cubic-bezier(.34,1.56,.64,1) both}
-
-.result-title{font-size:.7rem;font-weight:600;color:var(--text2);letter-spacing:.1em;text-transform:uppercase;margin-bottom:16px}
-
-/* STAT GRID */
-.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
-.stat-box{
-  background:var(--card2);border:1px solid var(--border);
-  border-radius:12px;padding:14px 16px;
-}
-.stat-box .s-label{font-size:.68rem;color:var(--text2);font-weight:400;letter-spacing:.06em;text-transform:uppercase}
-.stat-box .s-val{font-size:1.4rem;font-weight:700;margin-top:4px}
-.stat-box .s-sub{font-size:.7rem;color:var(--text2);font-weight:300;margin-top:2px}
-
-/* HEALTH BARS */
-.health-section{margin-bottom:20px}
-.health-title{font-size:.7rem;font-weight:600;color:var(--text2);letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px}
-.hbar-item{margin-bottom:12px}
-.hbar-head{display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:5px}
-.hbar-head span:first-child{color:var(--text2);font-weight:400}
-.hbar-head span:last-child{font-weight:600}
-.hbar-track{height:6px;background:var(--border);border-radius:99px;overflow:hidden}
-.hbar-fill{height:100%;border-radius:99px;transition:width 1s ease;width:0%}
-
-/* ADVICE BOX */
-.advice-box{
-  border-radius:14px;padding:16px 18px;
-  font-size:.84rem;line-height:1.75;font-weight:300;
-  border-left:3px solid;
-}
-.advice-icon{font-size:1.2rem;margin-bottom:6px;display:block}
-.advice-box strong{font-weight:600;display:block;margin-bottom:4px;font-size:.88rem}
-
-/* TIPS */
-.tips-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
-.tip-card{
-  background:var(--card2);border:1px solid var(--border);
-  border-radius:12px;padding:14px;
-  font-size:.78rem;font-weight:300;color:var(--text2);
-  line-height:1.5;
-}
-.tip-card .tip-icon{font-size:1.3rem;margin-bottom:6px;display:block}
-.tip-card .tip-title{font-size:.8rem;font-weight:600;color:var(--text);margin-bottom:4px}
-
-/* COLORS */
-.c-blue{color:#79c0ff}
-.c-green{color:var(--green)}
-.c-yellow{color:var(--yellow)}
-.c-orange{color:var(--orange)}
-.c-red{color:var(--red)}
+.btn-send:hover{background:#388bfd;transform:scale(1.05)}
+.btn-send:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn-send svg{width:18px;height:18px}
 
 /* ANIMATIONS */
-@keyframes fadeDown{from{opacity:0;transform:translateY(-24px)}to{opacity:1;transform:translateY(0)}}
-@keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
-@keyframes popIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
-@keyframes pulse{0%,100%{opacity:.7}50%{opacity:1}}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* Scrollbar global */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px}
 </style>
 </head>
 <body>
-<div class="container">
 
-  <!-- HEADER -->
-  <div class="site-header">
-    <div class="badge">Body Mass Index Calculator</div>
-    <h1>วัด <span>BMI</span> ของคุณ</h1>
-    <p>วิเคราะห์สุขภาพแบบละเอียด พร้อมคำแนะนำเฉพาะบุคคล</p>
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="logo">BMI <span>AI Pro</span></div>
+    <div class="tabs">
+      <button class="tab active" onclick="showPage('calc')"><span class="dot"></span>คำนวณ</button>
+      <button class="tab" onclick="showPage('history')"><span class="dot"></span>ประวัติ</button>
+      <button class="tab" onclick="showPage('chat')"><span class="dot"></span>ถาม AI</button>
+    </div>
   </div>
+</div>
 
-  <div class="layout">
+<!-- ══════════════ PAGE 1: CALCULATOR ══════════════ -->
+<div class="page active" id="page-calc">
+  <div class="calc-grid">
 
-    <!-- LEFT: INPUT -->
+    <!-- LEFT INPUT -->
     <div class="card">
+      <div class="card-title">ข้อมูลส่วนตัว</div>
       <div class="gender-row">
-        <button class="gender-btn active" id="btn-male" onclick="setGender('male')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 8.5L21 3m0 0h-5m5 0v5"/>
-          </svg>
-          ชาย
+        <button class="gbtn active" id="gm" onclick="setG('male')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 8.5L21 3m0 0h-5m5 0v5"/></svg>ชาย
         </button>
-        <button class="gender-btn" id="btn-female" onclick="setGender('female')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <circle cx="12" cy="9" r="6"/><path d="M12 15v6m-3-3h6"/>
-          </svg>
-          หญิง
+        <button class="gbtn" id="gf" onclick="setG('female')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="9" r="6"/><path d="M12 15v6m-3-3h6"/></svg>หญิง
         </button>
       </div>
-
-      <div class="sl-group">
-        <div class="sl-head">
-          <label>ส่วนสูง</label>
-          <div class="sl-val" id="lh">170<small>cm</small></div>
-        </div>
+      <div class="sl">
+        <div class="sl-head"><span class="sl-label">ส่วนสูง</span><div class="sl-val" id="lh">170<small>cm</small></div></div>
         <input type="range" id="sh" min="100" max="220" value="170" oninput="upd('lh',this.value,'cm')"/>
       </div>
-
-      <div class="sl-group">
-        <div class="sl-head">
-          <label>น้ำหนัก</label>
-          <div class="sl-val" id="lw">65<small>kg</small></div>
-        </div>
+      <div class="sl">
+        <div class="sl-head"><span class="sl-label">น้ำหนัก</span><div class="sl-val" id="lw">65<small>kg</small></div></div>
         <input type="range" id="sw" min="30" max="200" value="65" oninput="upd('lw',this.value,'kg')"/>
       </div>
-
-      <div class="sl-group">
-        <div class="sl-head">
-          <label>อายุ</label>
-          <div class="sl-val" id="la">25<small>ปี</small></div>
-        </div>
+      <div class="sl">
+        <div class="sl-head"><span class="sl-label">อายุ</span><div class="sl-val" id="la">25<small>ปี</small></div></div>
         <input type="range" id="sa" min="5" max="100" value="25" oninput="upd('la',this.value,'ปี')"/>
       </div>
-
-      <button class="btn-calc" onclick="calc()">คำนวณ BMI →</button>
+      <button class="btn-calc" onclick="calc()">⚡ คำนวณและบันทึก</button>
     </div>
 
-    <!-- RIGHT: PANELS -->
-    <div class="right-panel">
+    <!-- RIGHT RESULT -->
+    <div style="display:flex;flex-direction:column;gap:16px">
 
-      <!-- SILHOUETTE -->
-      <div class="silhouette-card">
-        <div class="body-stage">
-          <div class="glow-ring" id="glow"></div>
-          <svg id="body-svg" class="body-svg" viewBox="0 0 100 200" width="120" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <!-- HEAD -->
-            <ellipse id="b-head" cx="50" cy="18" rx="13" ry="14" fill="#58a6ff" opacity=".9"/>
-            <!-- NECK -->
-            <rect id="b-neck" x="45" y="30" width="10" height="8" rx="3" fill="#58a6ff" opacity=".85"/>
-            <!-- TORSO -->
-            <path id="b-torso" d="M32 40 Q50 36 68 40 L72 90 Q50 96 28 90 Z" fill="#58a6ff" opacity=".85"/>
-            <!-- ARMS -->
-            <path id="b-arm-l" d="M32 42 Q18 55 16 80 Q15 88 20 88 Q24 88 26 80 Q28 60 36 50 Z" fill="#58a6ff" opacity=".8"/>
-            <path id="b-arm-r" d="M68 42 Q82 55 84 80 Q85 88 80 88 Q76 88 74 80 Q72 60 64 50 Z" fill="#58a6ff" opacity=".8"/>
-            <!-- HANDS -->
-            <ellipse id="b-hand-l" cx="19" cy="92" rx="5" ry="7" fill="#58a6ff" opacity=".8"/>
-            <ellipse id="b-hand-r" cx="81" cy="92" rx="5" ry="7" fill="#58a6ff" opacity=".8"/>
-            <!-- HIPS/PELVIS -->
-            <path id="b-hips" d="M28 88 Q50 96 72 88 L70 110 Q50 116 30 110 Z" fill="#58a6ff" opacity=".8"/>
-            <!-- LEGS -->
-            <path id="b-leg-l" d="M30 108 Q28 140 28 165 Q28 172 35 172 Q42 172 43 165 Q44 140 48 108 Z" fill="#58a6ff" opacity=".8"/>
-            <path id="b-leg-r" d="M70 108 Q72 140 72 165 Q72 172 65 172 Q58 172 57 165 Q56 140 52 108 Z" fill="#58a6ff" opacity=".8"/>
-            <!-- FEET -->
-            <ellipse id="b-foot-l" cx="35" cy="177" rx="9" ry="5" fill="#58a6ff" opacity=".75"/>
-            <ellipse id="b-foot-r" cx="65" cy="177" rx="9" ry="5" fill="#58a6ff" opacity=".75"/>
+      <!-- SILHOUETTE + GAUGE -->
+      <div class="card sil-card">
+        <div class="sil-stage">
+          <div class="sil-glow" id="sil-glow"></div>
+          <svg id="body-svg" viewBox="0 0 100 200" width="110" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <ellipse id="b-head" cx="50" cy="18" rx="13" ry="14" fill="#4f8ef7" opacity=".9"/>
+            <rect id="b-neck" x="45" y="30" width="10" height="8" rx="3" fill="#4f8ef7" opacity=".85"/>
+            <path id="b-torso" d="M33 40 Q50 36 67 40 L71 90 Q50 96 29 90 Z" fill="#4f8ef7" opacity=".85"/>
+            <path id="b-arml" d="M33 43 Q18 56 16 80 Q15 88 20 88 Q25 88 26 80 Q28 60 37 51 Z" fill="#4f8ef7" opacity=".8"/>
+            <path id="b-armr" d="M67 43 Q82 56 84 80 Q85 88 80 88 Q75 88 74 80 Q72 60 63 51 Z" fill="#4f8ef7" opacity=".8"/>
+            <ellipse id="b-handl" cx="19" cy="92" rx="5" ry="6" fill="#4f8ef7" opacity=".8"/>
+            <ellipse id="b-handr" cx="81" cy="92" rx="5" ry="6" fill="#4f8ef7" opacity=".8"/>
+            <path id="b-hips" d="M29 88 Q50 96 71 88 L69 110 Q50 116 31 110 Z" fill="#4f8ef7" opacity=".8"/>
+            <path id="b-legl" d="M31 108 Q29 140 29 165 Q29 172 36 172 Q43 172 44 165 Q45 140 49 108 Z" fill="#4f8ef7" opacity=".8"/>
+            <path id="b-legr" d="M69 108 Q71 140 71 165 Q71 172 64 172 Q57 172 56 165 Q55 140 51 108 Z" fill="#4f8ef7" opacity=".8"/>
+            <ellipse id="b-footl" cx="35" cy="177" rx="9" ry="5" fill="#4f8ef7" opacity=".75"/>
+            <ellipse id="b-footr" cx="65" cy="177" rx="9" ry="5" fill="#4f8ef7" opacity=".75"/>
           </svg>
         </div>
-        <div class="sil-bmi-num" id="sil-num" style="color:var(--accent)">—</div>
-        <div class="sil-bmi-cat" id="sil-cat" style="color:var(--accent)">กรอกข้อมูลแล้วกดคำนวณ</div>
-        <div class="sil-bmi-range" id="sil-range">ดัชนีมวลกาย (BMI)</div>
-
-        <!-- GAUGE -->
+        <div class="bmi-big" id="bmi-big" style="color:var(--accent)">—</div>
+        <div class="bmi-cat-lbl" id="bmi-cat" style="color:var(--accent)">กรอกข้อมูลแล้วกดคำนวณ</div>
+        <div class="bmi-sub" id="bmi-sub">ดัชนีมวลกาย</div>
         <div class="gauge-wrap">
           <div class="gauge-track">
             <div class="gauge-needle" id="needle" style="left:2%;color:var(--accent)"></div>
           </div>
-          <div class="gauge-labels">
-            <span>ผอม</span><span>ปกติ</span><span>อ้วน 1</span><span>อ้วน 2</span><span>อ้วน 3</span>
+          <div class="gauge-ticks">
+            <span>ผอม&lt;18.5</span><span>ปกติ 23</span><span>อ้วน1 25</span><span>อ้วน2&gt;30</span>
           </div>
+        </div>
+        <div class="stats-row" id="stats-row" style="display:none">
+          <div class="stat-mini"><div class="sm-l">น้ำหนักดี</div><div class="sm-v c-green" id="s-ideal">—</div><div class="sm-s">kg</div></div>
+          <div class="stat-mini"><div class="sm-l">ต่าง</div><div class="sm-v" id="s-diff">—</div><div class="sm-s" id="s-diffsub">—</div></div>
+          <div class="stat-mini"><div class="sm-l">TDEE</div><div class="sm-v" style="color:var(--blue)" id="s-tdee">—</div><div class="sm-s">kcal/วัน</div></div>
+          <div class="stat-mini"><div class="sm-l">BMR</div><div class="sm-v" style="color:var(--purple)" id="s-bmr">—</div><div class="sm-s">kcal/วัน</div></div>
         </div>
       </div>
 
-      <!-- RESULT DETAIL -->
-      <div class="result-card" id="rc">
-        <div class="result-title">ผลการวิเคราะห์สุขภาพ</div>
-
-        <!-- STATS -->
-        <div class="stat-grid">
-          <div class="stat-box">
-            <div class="s-label">BMI</div>
-            <div class="s-val" id="r-bmi" style="color:var(--accent)">—</div>
-            <div class="s-sub" id="r-cat">—</div>
-          </div>
-          <div class="stat-box">
-            <div class="s-label">น้ำหนักในช่วงดี</div>
-            <div class="s-val c-green" id="r-ideal">—</div>
-            <div class="s-sub">kg (BMI 18.5–22.9)</div>
-          </div>
-          <div class="stat-box">
-            <div class="s-label">ควรลด/เพิ่ม</div>
-            <div class="s-val" id="r-diff">—</div>
-            <div class="s-sub" id="r-diff-sub">—</div>
-          </div>
-          <div class="stat-box">
-            <div class="s-label">แคลอรีต่อวัน (TDEE)</div>
-            <div class="s-val c-blue" id="r-cal">—</div>
-            <div class="s-sub">kcal/day (ประมาณ)</div>
-          </div>
+      <!-- RISK + ADVICE (hidden until calc) -->
+      <div class="card" id="detail-card" style="display:none">
+        <div class="card-title">ความเสี่ยงและคำแนะนำ</div>
+        <div class="risk-bars">
+          <div class="rb-item"><div class="rb-head"><span>โรคเบาหวาน</span><span id="r1l">—</span></div><div class="rb-track"><div class="rb-fill" id="r1" ></div></div></div>
+          <div class="rb-item"><div class="rb-head"><span>โรคหัวใจ</span><span id="r2l">—</span></div><div class="rb-track"><div class="rb-fill" id="r2"></div></div></div>
+          <div class="rb-item"><div class="rb-head"><span>ความดันโลหิต</span><span id="r3l">—</span></div><div class="rb-track"><div class="rb-fill" id="r3"></div></div></div>
+          <div class="rb-item"><div class="rb-head"><span>ข้อและกระดูก</span><span id="r4l">—</span></div><div class="rb-track"><div class="rb-fill" id="r4"></div></div></div>
         </div>
-
-        <!-- HEALTH BARS -->
-        <div class="health-section">
-          <div class="health-title">ความเสี่ยงต่อสุขภาพ</div>
-          <div class="hbar-item">
-            <div class="hbar-head"><span>โรคเบาหวาน</span><span id="h1-lbl">—</span></div>
-            <div class="hbar-track"><div class="hbar-fill" id="h1" style="background:var(--green)"></div></div>
-          </div>
-          <div class="hbar-item">
-            <div class="hbar-head"><span>โรคหัวใจ</span><span id="h2-lbl">—</span></div>
-            <div class="hbar-track"><div class="hbar-fill" id="h2" style="background:var(--green)"></div></div>
-          </div>
-          <div class="hbar-item">
-            <div class="hbar-head"><span>ความดันโลหิตสูง</span><span id="h3-lbl">—</span></div>
-            <div class="hbar-track"><div class="hbar-fill" id="h3" style="background:var(--green)"></div></div>
-          </div>
-          <div class="hbar-item">
-            <div class="hbar-head"><span>ข้อและกระดูก</span><span id="h4-lbl">—</span></div>
-            <div class="hbar-track"><div class="hbar-fill" id="h4" style="background:var(--green)"></div></div>
-          </div>
-        </div>
-
-        <!-- ADVICE -->
-        <div class="advice-box" id="advice-box">
-          <span class="advice-icon" id="adv-icon"></span>
+        <div class="advice-box" id="adv-box">
           <strong id="adv-title"></strong>
           <span id="adv-text"></span>
         </div>
-
-        <!-- TIPS -->
         <div class="tips-grid" id="tips-grid"></div>
       </div>
 
-    </div><!-- right -->
-  </div><!-- layout -->
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ PAGE 2: HISTORY ══════════════ -->
+<div class="page" id="page-history">
+  <div class="hist-header">
+    <h2>📈 ประวัติ BMI</h2>
+    <button class="btn-clear" onclick="clearHistory()">ล้างข้อมูล</button>
+  </div>
+
+  <!-- Chart -->
+  <div class="chart-wrap">
+    <div class="card-title">กราฟ BMI ย้อนหลัง</div>
+    <canvas id="hist-canvas"></canvas>
+  </div>
+
+  <!-- Compare Thai avg -->
+  <div class="card" style="margin-bottom:20px">
+    <div class="card-title">เปรียบเทียบกับค่าเฉลี่ยคนไทย</div>
+    <div class="compare-grid">
+      <div class="cmp-card">
+        <div class="cmp-label">BMI ของคุณ</div>
+        <div class="cmp-val" id="cmp-yours" style="color:var(--accent)">—</div>
+        <div class="cmp-sub">ล่าสุด</div>
+        <div class="cmp-bar-wrap"><div class="cmp-bar" id="cmp-bar-yours" style="background:var(--accent)"></div></div>
+      </div>
+      <div class="cmp-card">
+        <div class="cmp-label">ค่าเฉลี่ยชาย (ไทย)</div>
+        <div class="cmp-val" style="color:var(--yellow)">23.1</div>
+        <div class="cmp-sub">อ้างอิง NHES 2021</div>
+        <div class="cmp-bar-wrap"><div class="cmp-bar" style="background:var(--yellow);width:58%"></div></div>
+      </div>
+      <div class="cmp-card">
+        <div class="cmp-label">ค่าเฉลี่ยหญิง (ไทย)</div>
+        <div class="cmp-val" style="color:var(--purple)">23.6</div>
+        <div class="cmp-sub">อ้างอิง NHES 2021</div>
+        <div class="cmp-bar-wrap"><div class="cmp-bar" style="background:var(--purple);width:60%"></div></div>
+      </div>
+    </div>
+    <div id="cmp-comment" style="margin-top:14px;font-size:.82rem;color:var(--text2);font-weight:300;text-align:center"></div>
+  </div>
+
+  <!-- List -->
+  <div class="card">
+    <div class="card-title">รายการบันทึก</div>
+    <div class="hist-list" id="hist-list">
+      <div class="empty-state">
+        <div class="es-icon">📊</div>
+        <p>ยังไม่มีข้อมูล<br/>ไปคำนวณ BMI แล้วกด "คำนวณและบันทึก" เพื่อเพิ่มข้อมูล</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ PAGE 3: AI CHAT ══════════════ -->
+<div class="page" id="page-chat">
+  <div class="chat-layout">
+
+    <!-- Sidebar -->
+    <div class="chat-sidebar">
+      <div class="sidebar-title">คำถามด่วน</div>
+      <button class="quick-btn" onclick="quickQ('BMI ของฉันคือ '+lastBMI+' แปลว่าอะไร และควรทำอย่างไร?')">🔍 วิเคราะห์ BMI ของฉัน</button>
+      <button class="quick-btn" onclick="quickQ('อาหารอะไรที่ควรกินเพื่อสุขภาพดี?')">🥗 อาหารเพื่อสุขภาพ</button>
+      <button class="quick-btn" onclick="quickQ('ออกกำลังกายแบบไหนดีที่สุดสำหรับการลดน้ำหนัก?')">🏃 ออกกำลังกายลดน้ำหนัก</button>
+      <button class="quick-btn" onclick="quickQ('น้ำหนักที่เหมาะสมสำหรับส่วนสูง '+lastHeight+' cm คือเท่าไร?')">⚖️ น้ำหนักที่เหมาะสม</button>
+      <button class="quick-btn" onclick="quickQ('ความเสี่ยงของโรคเรื้อรังที่เกี่ยวกับ BMI มีอะไรบ้าง?')">❤️ ความเสี่ยงโรคเรื้อรัง</button>
+      <button class="quick-btn" onclick="quickQ('วิธีลดน้ำหนักอย่างปลอดภัยและยั่งยืน?')">📉 ลดน้ำหนักยั่งยืน</button>
+      <button class="quick-btn" onclick="quickQ('แคลอรีที่ควรกินต่อวันสำหรับคนที่มี BMI '+lastBMI+'?')">🔥 แคลอรีต่อวัน</button>
+    </div>
+
+    <!-- Chat window -->
+    <div class="chat-main">
+      <div class="chat-header">
+        <div class="ai-avatar">🤖</div>
+        <div class="ai-info">
+          <div class="ai-name">Health AI Assistant</div>
+          <div class="ai-status">พร้อมให้คำปรึกษา</div>
+        </div>
+      </div>
+      <div class="chat-messages" id="chat-msgs">
+        <div class="msg ai">
+          <div class="msg-avatar">🤖</div>
+          <div>
+            <div class="msg-bubble">สวัสดีครับ! ผมเป็น AI ที่ช่วยดูแลสุขภาพของคุณ 🌿<br/><br/>คุณสามารถถามเรื่อง BMI, โภชนาการ, การออกกำลังกาย หรือสุขภาพทั่วไปได้เลยครับ หรือจะให้ผมวิเคราะห์ค่า BMI ของคุณก็ได้!</div>
+            <div class="msg-time">เพิ่งเริ่ม</div>
+          </div>
+        </div>
+      </div>
+      <div class="chat-input-row">
+        <textarea class="chat-input" id="chat-input" placeholder="พิมพ์คำถามสุขภาพ..." rows="1"
+          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg()}"></textarea>
+        <button class="btn-send" id="send-btn" onclick="sendMsg()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
-let gender = 'male';
+// ── STATE ──
+let gender='male', lastBMI='—', lastHeight='170';
+const HIST_KEY='bmi_history';
 
-function upd(id, v, u) {
-  document.getElementById(id).innerHTML = v + '<small>' + u + '</small>';
+function upd(id,v,u){document.getElementById(id).innerHTML=v+'<small>'+u+'</small>'}
+function setG(g){
+  gender=g;
+  document.getElementById('gm').classList.toggle('active',g==='male');
+  document.getElementById('gf').classList.toggle('active',g==='female');
 }
 
-function setGender(g) {
-  gender = g;
-  document.getElementById('btn-male').classList.toggle('active', g==='male');
-  document.getElementById('btn-female').classList.toggle('active', g==='female');
+// ── PAGE TABS ──
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  if(id==='history') renderHistory();
 }
 
-const CATS = [
-  { max:18.5, key:'thin',   label:'น้ำหนักน้อย',   color:'#79c0ff', pct:12  },
-  { max:23,   key:'normal', label:'น้ำหนักปกติ',   color:'#3fb950', pct:38  },
-  { max:25,   key:'over',   label:'น้ำหนักเกิน',   color:'#d29922', pct:58  },
-  { max:30,   key:'ob1',    label:'อ้วนระดับ 1',   color:'#f0883e', pct:78  },
-  { max:999,  key:'ob2',    label:'อ้วนระดับ 2+',  color:'#f85149', pct:94  },
+// ── BMI DATA ──
+const CATS=[
+  {max:18.5,key:'thin',  label:'น้ำหนักน้อย',color:'#60a5fa',pct:12},
+  {max:23,  key:'normal',label:'น้ำหนักปกติ',color:'#34d399',pct:38},
+  {max:25,  key:'over',  label:'น้ำหนักเกิน', color:'#fbbf24',pct:58},
+  {max:30,  key:'ob1',   label:'อ้วนระดับ 1', color:'#f97316',pct:78},
+  {max:999, key:'ob2',   label:'อ้วนระดับ 2+',color:'#f87171',pct:94},
 ];
-
-const ADVICE = {
-  thin:   { icon:'🥗', title:'ควรเพิ่มน้ำหนัก', text:'รับประทานอาหารให้ครบ 5 หมู่ เพิ่มโปรตีนและคาร์โบไฮเดรตเชิงซ้อน ออกกำลังกายแบบเวทเทรนนิ่งเพื่อเพิ่มกล้ามเนื้อ และนอนหลับพักผ่อนให้เพียงพอ', bg:'rgba(121,192,255,.08)', border:'#79c0ff' },
-  normal: { icon:'✅', title:'สุขภาพดีเยี่ยม!', text:'คุณอยู่ในเกณฑ์ที่ดี ดูแลรักษาด้วยการออกกำลังกายสม่ำเสมออย่างน้อย 150 นาที/สัปดาห์ รับประทานอาหารสมดุล และตรวจสุขภาพประจำปี', bg:'rgba(63,185,80,.08)', border:'#3fb950' },
-  over:   { icon:'⚠️', title:'ควรระวัง', text:'น้ำหนักเริ่มเกินเกณฑ์ ควรลดอาหารแป้ง น้ำตาล และไขมัน เพิ่มการออกกำลังกายแบบคาร์ดิโอ เช่น วิ่ง ว่ายน้ำ หรือปั่นจักรยาน อย่างน้อย 30 นาที/วัน', bg:'rgba(210,153,34,.08)', border:'#d29922' },
-  ob1:    { icon:'🔴', title:'ต้องปรับพฤติกรรมด่วน', text:'ความเสี่ยงต่อโรคเรื้อรังสูงขึ้น ควรพบนักโภชนาการหรือแพทย์เพื่อวางแผนลดน้ำหนักอย่างถูกต้อง ตั้งเป้าลด 0.5–1 kg ต่อสัปดาห์', bg:'rgba(240,136,62,.08)', border:'#f0883e' },
-  ob2:    { icon:'🚨', title:'ความเสี่ยงสูง — ควรพบแพทย์', text:'น้ำหนักเกินมาตรฐานอย่างมีนัยสำคัญ มีความเสี่ยงสูงต่อโรคหัวใจ เบาหวาน และความดัน ควรพบแพทย์โดยเร็วเพื่อรับคำแนะนำที่เหมาะสม', bg:'rgba(248,81,73,.08)', border:'#f85149' },
+const SHAPES={
+  thin:  {t:'M36 40 Q50 36 64 40 L67 90 Q50 95 33 90 Z', h:'M33 88 Q50 95 67 88 L65 108 Q50 114 35 108 Z'},
+  normal:{t:'M33 40 Q50 36 67 40 L71 90 Q50 96 29 90 Z', h:'M29 88 Q50 96 71 88 L69 110 Q50 116 31 110 Z'},
+  over:  {t:'M27 40 Q50 34 73 40 L77 90 Q50 99 23 90 Z', h:'M23 88 Q50 98 77 88 L75 112 Q50 120 25 112 Z'},
+  ob1:   {t:'M22 40 Q50 32 78 40 L83 92 Q50 103 17 92 Z', h:'M17 90 Q50 102 83 90 L81 116 Q50 126 19 116 Z'},
+  ob2:   {t:'M16 40 Q50 30 84 40 L90 94 Q50 108 10 94 Z', h:'M10 92 Q50 108 90 92 L88 120 Q50 132 12 120 Z'},
+};
+const RISKS={thin:[8,8,8,12],normal:[8,8,8,10],over:[35,30,35,40],ob1:[62,58,62,65],ob2:[88,82,85,80]};
+const ADVS={
+  thin:  {icon:'🥗',title:'ควรเพิ่มน้ำหนัก',text:'รับประทานให้ครบ 5 หมู่ เพิ่มโปรตีนและคาร์บเชิงซ้อน ฝึกเวทเพิ่มกล้ามเนื้อ',bg:'rgba(96,165,250,.08)',bc:'#60a5fa'},
+  normal:{icon:'✅',title:'สุขภาพดีเยี่ยม!',text:'รักษาระดับนี้ด้วยการออกกำลังกาย 150 นาที/สัปดาห์ และอาหารสมดุล',bg:'rgba(52,211,153,.08)',bc:'#34d399'},
+  over:  {icon:'⚠️',title:'ระวัง น้ำหนักเกิน',text:'ลดแป้งและน้ำตาล เพิ่มคาร์ดิโอ 30 นาที/วัน เน้นผักและโปรตีนไม่ติดมัน',bg:'rgba(251,191,36,.08)',bc:'#fbbf24'},
+  ob1:   {icon:'🔴',title:'ต้องปรับพฤติกรรมด่วน',text:'ปรึกษาแพทย์หรือนักโภชนาการ วางแผนลด 0.5–1 kg/สัปดาห์อย่างปลอดภัย',bg:'rgba(249,115,22,.08)',bc:'#f97316'},
+  ob2:   {icon:'🚨',title:'ความเสี่ยงสูง — พบแพทย์',text:'น้ำหนักเกินมาก ควรพบแพทย์โดยด่วนเพื่อรับแผนดูแลสุขภาพที่เหมาะสม',bg:'rgba(248,113,113,.08)',bc:'#f87171'},
+};
+const TIPS_D={
+  thin:  [{i:'🍳',t:'เพิ่มแคลอรี',d:'กินทุก 3-4 ชม. เน้นโปรตีน'},{i:'🏋️',t:'เวทเทรนนิ่ง',d:'3 วัน/สัปดาห์'},{i:'🥛',t:'นมและไข่',d:'โปรตีนทุกมื้อ'},{i:'😴',t:'พักผ่อน 8 ชม.',d:'ฮอร์โมนการเติบโต'}],
+  normal:[{i:'🏃',t:'คาร์ดิโอ',d:'150 นาที/สัปดาห์'},{i:'🥗',t:'อาหารสมดุล',d:'ผัก ผลไม้ โปรตีนดี'},{i:'💧',t:'น้ำ 8 แก้ว',d:'ต่อวัน'},{i:'🩺',t:'ตรวจปีละครั้ง',d:'ป้องกันโรค'}],
+  over:  [{i:'🚶',t:'เดิน 10K ก้าว',d:'เผาผลาญ 300-400 kcal'},{i:'🍽️',t:'ลด 500 kcal',d:'จากปกติต่อวัน'},{i:'🥦',t:'ผักก่อนมื้อ',d:'ลดการกินเกิน'},{i:'⏰',t:'IF 16:8',d:'จำกัดช่วงเวลากิน'}],
+  ob1:   [{i:'🏊',t:'ว่ายน้ำ',d:'ลดแรงกระแทกข้อ'},{i:'📊',t:'นับแคลอรี',d:'บันทึกทุกมื้อ'},{i:'👨‍⚕️',t:'พบแพทย์',d:'วางแผนลดน้ำหนัก'},{i:'🧘',t:'ลดเครียด',d:'เครียดทำให้อ้วน'}],
+  ob2:   [{i:'🏥',t:'พบแพทย์ด่วน',d:'ประเมินความเสี่ยง'},{i:'🩸',t:'ตรวจเลือด',d:'น้ำตาล ไขมัน ความดัน'},{i:'🥩',t:'โปรตีน+ผัก',d:'ลดแป้งหวาน'},{i:'🚴',t:'เริ่มเบาๆ',d:'เพิ่มทีละน้อย'}],
 };
 
-const TIPS_DATA = {
-  thin:[
-    {icon:'🍳',title:'เพิ่มแคลอรี',text:'กินทุก 3-4 ชม. เน้นโปรตีนและคาร์บดี'},
-    {icon:'🏋️',title:'เวทเทรนนิ่ง',text:'ฝึก 3 วัน/สัปดาห์เพื่อสร้างกล้ามเนื้อ'},
-    {icon:'🥛',title:'โปรตีนสูง',text:'ไข่ นม ถั่ว ปลา ในทุกมื้ออาหาร'},
-    {icon:'😴',title:'พักผ่อน',text:'นอน 7-9 ชั่วโมง ช่วยฮอร์โมนการเจริญเติบโต'},
-  ],
-  normal:[
-    {icon:'🏃',title:'ออกกำลังกาย',text:'คาร์ดิโอ + เวท สัปดาห์ละ 150 นาที'},
-    {icon:'🥗',title:'อาหารสมดุล',text:'ผัก ผลไม้ โปรตีนไม่ติดมัน ธัญพืช'},
-    {icon:'💧',title:'ดื่มน้ำ',text:'น้ำเปล่า 8 แก้วต่อวัน'},
-    {icon:'🩺',title:'ตรวจสุขภาพ',text:'ตรวจประจำปีเพื่อป้องกันโรค'},
-  ],
-  over:[
-    {icon:'🚶',title:'เดินวันละ 10K',text:'เผาผลาญ ~300-400 kcal ต่อวัน'},
-    {icon:'🍽️',title:'คุมแคลอรี',text:'ลด 300-500 kcal จากปกติต่อวัน'},
-    {icon:'🥦',title:'ผักก่อนมื้อ',text:'กินผักก่อนช่วยลดการกินมากเกินไป'},
-    {icon:'⏰',title:'จำกัดเวลากิน',text:'กินใน 8-10 ชั่วโมง Intermittent Fasting'},
-  ],
-  ob1:[
-    {icon:'🏊',title:'ว่ายน้ำ',text:'ลดแรงกระแทกข้อ เผาผลาญสูง'},
-    {icon:'📊',title:'บันทึกอาหาร',text:'ใช้แอปนับแคลอรีทุกมื้อ'},
-    {icon:'👨‍⚕️',title:'ปรึกษาแพทย์',text:'วางแผนลดน้ำหนักที่เหมาะสม'},
-    {icon:'🧘',title:'ลดความเครียด',text:'เครียดทำให้กินเยอะและอ้วนง่าย'},
-  ],
-  ob2:[
-    {icon:'🏥',title:'พบแพทย์ด่วน',text:'ประเมินความเสี่ยงและวางแผนรักษา'},
-    {icon:'🩸',title:'ตรวจเลือด',text:'เช็คน้ำตาล ไขมัน ความดัน'},
-    {icon:'🥩',title:'ลดแป้งหวัน',text:'เน้นโปรตีน ผัก ไขมันดี'},
-    {icon:'🚴',title:'ออกกำลังกาย',text:'เริ่มเบาๆ เพิ่มความหนักทีละน้อย'},
-  ],
-};
+function rColor(p){if(p<15)return'var(--green)';if(p<35)return'#4ade80';if(p<55)return'var(--yellow)';if(p<75)return'var(--orange)';return'var(--red)'}
+function rLabel(p){if(p<15)return'ต่ำมาก';if(p<35)return'ต่ำ';if(p<55)return'ปานกลาง';if(p<75)return'สูง';return'สูงมาก'}
 
-const RISK = {
-  thin:   [10,10,10,15],
-  normal: [8, 8, 8, 10],
-  over:   [35,30,35,40],
-  ob1:    [60,55,60,65],
-  ob2:    [85,80,85,80],
-};
-const RISK_LBL = ['ต่ำมาก','ต่ำ','ปานกลาง','สูง','สูงมาก'];
-function riskLabel(pct){ if(pct<15)return'ต่ำมาก';if(pct<35)return'ต่ำ';if(pct<55)return'ปานกลาง';if(pct<75)return'สูง';return'สูงมาก'; }
-function riskColor(pct){ if(pct<15)return'var(--green)';if(pct<35)return'#4fc' ;if(pct<55)return'var(--yellow)';if(pct<75)return'var(--orange)';return'var(--red)'; }
-
-// Body shape morph per category
-function morphBody(key, color) {
-  const el = document.getElementById('body-svg');
-  // adjust torso width based on category
-  const shapes = {
-    thin:   'M36 40 Q50 36 64 40 L67 90 Q50 95 33 90 Z',
-    normal: 'M32 40 Q50 36 68 40 L72 90 Q50 96 28 90 Z',
-    over:   'M27 40 Q50 34 73 40 L78 90 Q50 99 22 90 Z',
-    ob1:    'M22 40 Q50 32 78 40 L84 92 Q50 103 16 92 Z',
-    ob2:    'M18 40 Q50 30 82 40 L90 94 Q50 107 10 94 Z',
-  };
-  const hips = {
-    thin:   'M33 88 Q50 95 67 88 L65 108 Q50 114 35 108 Z',
-    normal: 'M28 88 Q50 96 72 88 L70 110 Q50 116 30 110 Z',
-    over:   'M22 88 Q50 98 78 88 L76 112 Q50 120 24 112 Z',
-    ob1:    'M16 90 Q50 102 84 90 L82 116 Q50 126 18 116 Z',
-    ob2:    'M10 92 Q50 108 90 92 L88 120 Q50 132 12 120 Z',
-  };
-  document.getElementById('b-torso').setAttribute('d', shapes[key]);
-  document.getElementById('b-hips').setAttribute('d', hips[key]);
-  // recolor all parts
-  ['b-head','b-neck','b-torso','b-arm-l','b-arm-r','b-hand-l','b-hand-r','b-hips','b-leg-l','b-leg-r','b-foot-l','b-foot-r'].forEach(id=>{
-    document.getElementById(id).setAttribute('fill', color);
-  });
-  document.getElementById('glow').style.background = color;
+function morphBody(key,color){
+  const s=SHAPES[key];
+  document.getElementById('b-torso').setAttribute('d',s.t);
+  document.getElementById('b-hips').setAttribute('d',s.h);
+  ['b-head','b-neck','b-torso','b-arml','b-armr','b-handl','b-handr','b-hips','b-legl','b-legr','b-footl','b-footr']
+    .forEach(id=>document.getElementById(id)?.setAttribute('fill',color));
+  document.getElementById('sil-glow').style.background=color;
 }
 
-function calc() {
-  const h = parseFloat(document.getElementById('sh').value) / 100;
-  const w = parseFloat(document.getElementById('sw').value);
-  const age = parseInt(document.getElementById('sa').value);
-  const bmi = w / (h * h);
-  const bmiR = Math.round(bmi * 10) / 10;
+// ── CALC ──
+function calc(){
+  const h=parseFloat(document.getElementById('sh').value)/100;
+  const w=parseFloat(document.getElementById('sw').value);
+  const age=parseInt(document.getElementById('sa').value);
+  const bmi=w/(h*h);
+  const bmiR=Math.round(bmi*10)/10;
 
-  // Category
-  let cat = CATS[CATS.length-1];
-  for(let c of CATS){ if(bmi < c.max){ cat = c; break; } }
+  let cat=CATS[CATS.length-1];
+  for(let c of CATS){if(bmi<c.max){cat=c;break}}
 
-  // Ideal weight
-  const idealMin = Math.round(18.5 * h * h * 10) / 10;
-  const idealMax = Math.round(22.9 * h * h * 10) / 10;
-  const idealMid = Math.round((idealMin + idealMax) / 2 * 10) / 10;
-  const diff = Math.round((w - idealMid) * 10) / 10;
+  const imin=Math.round(18.5*h*h*10)/10;
+  const imax=Math.round(22.9*h*h*10)/10;
+  const imid=Math.round((imin+imax)/2*10)/10;
+  const diff=Math.round((w-imid)*10)/10;
+  const bmr=gender==='male'?10*w+6.25*(h*100)-5*age+5:10*w+6.25*(h*100)-5*age-161;
+  const tdee=Math.round(bmr*1.55);
 
-  // TDEE (Mifflin-St Jeor × 1.55 moderate)
-  let bmr;
-  if(gender === 'male') bmr = 10*w + 6.25*(h*100) - 5*age + 5;
-  else                  bmr = 10*w + 6.25*(h*100) - 5*age - 161;
-  const tdee = Math.round(bmr * 1.55);
+  const pct=Math.min(Math.max(((bmi-10)/30)*100,2),97);
 
-  // Gauge needle position (BMI 10–40 → 0–100%)
-  const pct = Math.min(Math.max(((bmi - 10) / 30) * 100, 2), 97);
+  // silhouette
+  document.getElementById('bmi-big').textContent=bmiR;
+  document.getElementById('bmi-big').style.color=cat.color;
+  document.getElementById('bmi-cat').textContent=cat.label;
+  document.getElementById('bmi-cat').style.color=cat.color;
+  document.getElementById('bmi-sub').textContent=(gender==='male'?'ชาย':'หญิง')+' · อายุ '+age+' ปี';
+  document.getElementById('needle').style.left=pct+'%';
+  document.getElementById('needle').style.color=cat.color;
+  morphBody(cat.key,cat.color);
 
-  // --- Update silhouette ---
-  document.getElementById('sil-num').textContent  = bmiR;
-  document.getElementById('sil-num').style.color  = cat.color;
-  document.getElementById('sil-cat').textContent  = cat.label;
-  document.getElementById('sil-cat').style.color  = cat.color;
-  document.getElementById('sil-range').textContent = gender==='male'?'ชาย':'หญิง' + ' · ' + 'BMI ' + bmiR;
-  document.getElementById('needle').style.left    = pct + '%';
-  document.getElementById('needle').style.color   = cat.color;
-  morphBody(cat.key, cat.color);
+  // stats
+  document.getElementById('stats-row').style.display='grid';
+  const idealStr=imin+'–'+imax+' kg';
+  document.getElementById('s-ideal').textContent=idealStr;
+  document.getElementById('s-ideal').style.color='var(--green)';
+  document.getElementById('s-diff').textContent=(diff>0?'+':'')+diff+' kg';
+  document.getElementById('s-diff').style.color=diff>0?'var(--orange)':diff<0?'var(--blue)':'var(--green)';
+  document.getElementById('s-diffsub').textContent=diff>0?'เกินเกณฑ์':diff<0?'ต่ำกว่าเกณฑ์':'พอดี!';
+  document.getElementById('s-tdee').textContent=tdee;
+  document.getElementById('s-bmr').textContent=Math.round(bmr);
 
-  // --- Update result card ---
-  document.getElementById('r-bmi').textContent    = bmiR;
-  document.getElementById('r-bmi').style.color    = cat.color;
-  document.getElementById('r-cat').textContent    = cat.label;
-  document.getElementById('r-ideal').textContent  = idealMin + '–' + idealMax + ' kg';
-  document.getElementById('r-diff').textContent   = (diff > 0 ? '+' : '') + diff + ' kg';
-  document.getElementById('r-diff').style.color   = diff > 0 ? 'var(--orange)' : diff < 0 ? 'var(--blue)' : 'var(--green)';
-  document.getElementById('r-diff-sub').textContent = diff > 0 ? 'เกินเกณฑ์' : diff < 0 ? 'ต่ำกว่าเกณฑ์' : 'พอดี';
-  document.getElementById('r-cal').textContent    = tdee;
-
-  // Health bars
-  const risks = RISK[cat.key];
-  const hIds = ['h1','h2','h3','h4'];
-  const hLbls= ['h1-lbl','h2-lbl','h3-lbl','h4-lbl'];
+  // detail card
+  const dc=document.getElementById('detail-card');
+  dc.style.display='block';
+  const risks=RISKS[cat.key];
   setTimeout(()=>{
-    hIds.forEach((id,i)=>{
-      const bar = document.getElementById(id);
-      bar.style.width   = risks[i] + '%';
-      bar.style.background = riskColor(risks[i]);
-      document.getElementById(hLbls[i]).textContent = riskLabel(risks[i]);
-      document.getElementById(hLbls[i]).style.color = riskColor(risks[i]);
+    ['r1','r2','r3','r4'].forEach((id,i)=>{
+      const bar=document.getElementById(id);
+      bar.style.width=risks[i]+'%';
+      bar.style.background=rColor(risks[i]);
+      document.getElementById(id+'l').textContent=rLabel(risks[i]);
+      document.getElementById(id+'l').style.color=rColor(risks[i]);
     });
-  }, 300);
+  },300);
 
-  // Advice
-  const adv = ADVICE[cat.key];
-  document.getElementById('advice-box').style.background    = adv.bg;
-  document.getElementById('advice-box').style.borderColor   = adv.border;
-  document.getElementById('adv-icon').textContent  = adv.icon;
-  document.getElementById('adv-title').textContent = adv.title;
-  document.getElementById('adv-title').style.color = adv.border;
-  document.getElementById('adv-text').textContent  = adv.text;
+  const adv=ADVS[cat.key];
+  const ab=document.getElementById('adv-box');
+  ab.style.background=adv.bg;ab.style.borderColor=adv.bc;
+  document.getElementById('adv-title').textContent=adv.icon+' '+adv.title;
+  document.getElementById('adv-title').style.color=adv.bc;
+  document.getElementById('adv-text').textContent=adv.text;
 
-  // Tips
-  const tips = TIPS_DATA[cat.key];
-  document.getElementById('tips-grid').innerHTML = tips.map(t=>
-    `<div class="tip-card">
-      <span class="tip-icon">${t.icon}</span>
-      <div class="tip-title">${t.title}</div>
-      ${t.text}
-    </div>`
+  document.getElementById('tips-grid').innerHTML=TIPS_D[cat.key].map(t=>
+    `<div class="tip"><div class="ti">${t.i}</div><div class="tt">${t.t}</div>${t.d}</div>`
   ).join('');
 
-  // Show
-  const rc = document.getElementById('rc');
-  rc.classList.remove('show');
-  void rc.offsetWidth;
-  rc.classList.add('show');
-
-  // reset bars
-  hIds.forEach(id=>{ document.getElementById(id).style.width='0%'; });
+  // save history
+  lastBMI=bmiR;
+  lastHeight=Math.round(h*100);
+  const rec={bmi:bmiR,cat:cat.label,color:cat.color,weight:w,height:Math.round(h*100),age,gender,tdee,date:new Date().toISOString()};
+  const hist=getHist();
+  hist.push(rec);
+  if(hist.length>30)hist.shift();
+  localStorage.setItem(HIST_KEY,JSON.stringify(hist));
 }
+
+// ── HISTORY ──
+function getHist(){try{return JSON.parse(localStorage.getItem(HIST_KEY))||[]}catch{return[]}}
+function clearHistory(){if(confirm('ล้างประวัติทั้งหมด?')){localStorage.removeItem(HIST_KEY);renderHistory()}}
+
+function renderHistory(){
+  const hist=getHist();
+  // list
+  const list=document.getElementById('hist-list');
+  if(!hist.length){
+    list.innerHTML='<div class="empty-state"><div class="es-icon">📊</div><p>ยังไม่มีข้อมูล<br/>ไปคำนวณ BMI แล้วกด "คำนวณและบันทึก"</p></div>';
+  } else {
+    list.innerHTML=hist.slice().reverse().map((r,i)=>{
+      const d=new Date(r.date);
+      const ds=d.toLocaleDateString('th-TH',{day:'2-digit',month:'short',year:'2-digit'});
+      const ts=d.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
+      return`<div class="hist-item">
+        <div class="hi-date">${ds}<br/><span style="font-size:.65rem;color:var(--text3)">${ts}</span></div>
+        <div class="hi-bmi" style="color:${r.color}">${r.bmi}</div>
+        <div class="hi-info">
+          <div class="hi-cat" style="color:${r.color}">${r.cat}</div>
+          <div class="hi-det">${r.height} cm · ${r.weight} kg · อายุ ${r.age} ปี · TDEE ${r.tdee} kcal</div>
+        </div>
+        <div class="hi-badge" style="color:${r.color};border-color:${r.color}20;background:${r.color}10">${r.gender==='male'?'♂':'♀'}</div>
+      </div>`;
+    }).join('');
+  }
+
+  // compare
+  const latest=hist[hist.length-1];
+  if(latest){
+    document.getElementById('cmp-yours').textContent=latest.bmi;
+    document.getElementById('cmp-yours').style.color=latest.color;
+    const barPct=Math.min((latest.bmi/40)*100,100);
+    document.getElementById('cmp-bar-yours').style.width=barPct+'%';
+    document.getElementById('cmp-bar-yours').style.background=latest.color;
+    const thaiAvg=latest.gender==='male'?23.1:23.6;
+    const diffAvg=Math.round((latest.bmi-thaiAvg)*10)/10;
+    document.getElementById('cmp-comment').textContent=
+      diffAvg===0?'BMI ของคุณเท่ากับค่าเฉลี่ยคนไทยพอดี':
+      diffAvg>0?`BMI ของคุณสูงกว่าค่าเฉลี่ยคนไทยอยู่ ${diffAvg} หน่วย`:
+      `BMI ของคุณต่ำกว่าค่าเฉลี่ยคนไทยอยู่ ${Math.abs(diffAvg)} หน่วย`;
+  }
+
+  // draw chart
+  drawChart(hist);
+}
+
+function drawChart(hist){
+  const canvas=document.getElementById('hist-canvas');
+  const ctx=canvas.getContext('2d');
+  canvas.width=canvas.offsetWidth*2;
+  canvas.height=440;
+  ctx.scale(2,2);
+  const W=canvas.offsetWidth/2, H=220;
+
+  ctx.clearRect(0,0,W,H);
+
+  if(hist.length<2){
+    ctx.fillStyle='rgba(122,132,153,.4)';
+    ctx.font='300 13px Prompt,sans-serif';
+    ctx.textAlign='center';
+    ctx.fillText('บันทึกอย่างน้อย 2 ครั้งเพื่อดูกราฟ',W/2,H/2);
+    return;
+  }
+
+  const pad={t:20,r:20,b:40,l:44};
+  const vals=hist.map(r=>r.bmi);
+  const minV=Math.max(0,Math.min(...vals)-3), maxV=Math.max(...vals)+3;
+  const toX=i=>pad.l+(i/(hist.length-1))*(W-pad.l-pad.r);
+  const toY=v=>pad.t+(1-(v-minV)/(maxV-minV))*(H-pad.t-pad.b);
+
+  // zones
+  const zones=[{min:18.5,max:23,c:'rgba(52,211,153,.06)'},{min:23,max:25,c:'rgba(251,191,36,.06)'},{min:25,max:30,c:'rgba(249,115,22,.06)'}];
+  zones.forEach(z=>{
+    const y1=toY(Math.min(z.max,maxV)), y2=toY(Math.max(z.min,minV));
+    if(y2>y1){ctx.fillStyle=z.c;ctx.fillRect(pad.l,y1,W-pad.l-pad.r,y2-y1)}
+  });
+
+  // grid lines
+  for(let g=0;g<=4;g++){
+    const y=pad.t+g*(H-pad.t-pad.b)/4;
+    ctx.strokeStyle='rgba(255,255,255,.05)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(W-pad.r,y);ctx.stroke();
+    const v=maxV-(g/4)*(maxV-minV);
+    ctx.fillStyle='rgba(122,132,153,.6)';ctx.font='300 10px Prompt,sans-serif';ctx.textAlign='right';
+    ctx.fillText(v.toFixed(1),pad.l-6,y+4);
+  }
+
+  // gradient fill
+  const grad=ctx.createLinearGradient(0,pad.t,0,H-pad.b);
+  grad.addColorStop(0,'rgba(79,142,247,.35)');
+  grad.addColorStop(1,'rgba(79,142,247,.0)');
+  ctx.beginPath();
+  ctx.moveTo(toX(0),toY(vals[0]));
+  vals.forEach((_,i)=>{if(i>0)ctx.lineTo(toX(i),toY(vals[i]))});
+  ctx.lineTo(toX(vals.length-1),H-pad.b);
+  ctx.lineTo(toX(0),H-pad.b);
+  ctx.closePath();ctx.fillStyle=grad;ctx.fill();
+
+  // line
+  ctx.beginPath();ctx.strokeStyle='#4f8ef7';ctx.lineWidth=2;ctx.lineJoin='round';
+  vals.forEach((v,i)=>{i===0?ctx.moveTo(toX(i),toY(v)):ctx.lineTo(toX(i),toY(v))});
+  ctx.stroke();
+
+  // dots
+  vals.forEach((v,i)=>{
+    ctx.beginPath();
+    ctx.arc(toX(i),toY(v),4,0,Math.PI*2);
+    ctx.fillStyle=hist[i].color;
+    ctx.strokeStyle=ctx.canvas.style.background||'#07090f';
+    ctx.lineWidth=2;ctx.fill();ctx.stroke();
+  });
+
+  // x-labels
+  const step=Math.max(1,Math.floor(hist.length/6));
+  hist.forEach((r,i)=>{
+    if(i%step===0||i===hist.length-1){
+      const d=new Date(r.date);
+      const lbl=d.toLocaleDateString('th-TH',{day:'2-digit',month:'short'});
+      ctx.fillStyle='rgba(122,132,153,.7)';ctx.font='300 9px Prompt,sans-serif';ctx.textAlign='center';
+      ctx.fillText(lbl,toX(i),H-pad.b+14);
+    }
+  });
+}
+
+// ── AI CHAT ──
+let chatHistory=[];
+const SYS_PROMPT=`คุณเป็น Health AI Assistant ที่เชี่ยวชาญด้าน BMI, โภชนาการ และสุขภาพ ตอบเป็นภาษาไทยเสมอ ตอบกระชับ เป็นมิตร และให้ข้อมูลที่เป็นประโยชน์จริง ใช้ emoji ประกอบเล็กน้อยเพื่อให้อ่านง่าย ถ้ามีข้อมูล BMI ของผู้ใช้ให้ใช้ในการวิเคราะห์ด้วย`;
+
+async function sendMsg(){
+  const inp=document.getElementById('chat-input');
+  const txt=inp.value.trim();
+  if(!txt)return;
+  inp.value='';inp.style.height='';
+  addMsg('user',txt);
+  document.getElementById('send-btn').disabled=true;
+
+  // typing indicator
+  const typId='typing-'+Date.now();
+  const typEl=document.createElement('div');
+  typEl.id=typId;typEl.className='msg ai';
+  typEl.innerHTML=`<div class="msg-avatar">🤖</div><div class="typing"><span></span><span></span><span></span></div>`;
+  document.getElementById('chat-msgs').appendChild(typEl);
+  scrollChat();
+
+  chatHistory.push({role:'user',content:txt});
+
+  try{
+    const contextMsg=lastBMI!=='—'?`\n\n[ข้อมูลผู้ใช้: BMI=${lastBMI}, ส่วนสูง=${lastHeight}cm, เพศ=${gender==='male'?'ชาย':'หญิง'}]`:'';
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system:SYS_PROMPT+contextMsg,
+        messages:chatHistory.slice(-10),
+      })
+    });
+    const data=await res.json();
+    const reply=data.content?.map(b=>b.text||'').join('')||'ขออภัย เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง';
+    typEl.remove();
+    chatHistory.push({role:'assistant',content:reply});
+    addMsg('ai',reply);
+  }catch(e){
+    typEl.remove();
+    addMsg('ai','⚠️ ไม่สามารถเชื่อมต่อ AI ได้ในขณะนี้ กรุณาลองใหม่อีกครั้ง');
+  }
+  document.getElementById('send-btn').disabled=false;
+}
+
+function addMsg(role,text){
+  const msgs=document.getElementById('chat-msgs');
+  const now=new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
+  const div=document.createElement('div');
+  div.className='msg '+role;
+  const avatar=role==='ai'?'🤖':'👤';
+  const formatted=text.replace(/\n/g,'<br/>');
+  div.innerHTML=`<div class="msg-avatar">${avatar}</div><div><div class="msg-bubble">${formatted}</div><div class="msg-time">${now}</div></div>`;
+  msgs.appendChild(div);
+  scrollChat();
+}
+
+function scrollChat(){
+  const msgs=document.getElementById('chat-msgs');
+  msgs.scrollTop=msgs.scrollHeight;
+}
+
+function quickQ(q){
+  showPage('chat');document.querySelectorAll('.tab').forEach((t,i)=>{t.classList.toggle('active',i===2)});
+  document.getElementById('chat-input').value=q;
+  sendMsg();
+}
+
+// auto-resize textarea
+document.addEventListener('DOMContentLoaded',()=>{
+  const ta=document.getElementById('chat-input');
+  ta.addEventListener('input',function(){this.style.height='';this.style.height=Math.min(this.scrollHeight,100)+'px'});
+});
 </script>
 </body>
 </html>
